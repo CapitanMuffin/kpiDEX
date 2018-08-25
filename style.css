@@ -1,0 +1,47 @@
+body{
+	margin: 0;
+	padding: 0;
+}
+.myApp{
+	font-family: Arial;
+	background: lightgray;
+	width: 100vw;
+	height: 100vh;
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	grid-template-rows: repeat(9, 1fr);
+}
+.menu{
+	background: blue;
+	grid-column: 1 / 4;
+	grid-row: 1 / 10;
+}
+.logo{
+	text-align: center;
+}
+.logo img{
+	width: 80%
+}
+.search{
+	background: yellow;
+	grid-column: 4 / 13;
+	grid-row: 1 / 2;
+}
+.pokedex{
+	box-sizing: border-box;
+	padding: 20px;
+	grid-column: 4 / 13;
+	grid-row: 2 / 10;
+	background: green;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 20px;
+	overflow: auto;
+}
+.pokemon{
+	height: 200px;
+	background: #fff;
+	padding: 20px;
+	text-align: center;
+}
