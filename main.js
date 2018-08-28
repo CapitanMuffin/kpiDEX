@@ -1,34 +1,36 @@
+// CONFIG
 const pokedex = document.getElementById('pokedex');
 const BASE_API = 'https://pokeapi.co/api/v2/';
 
+// DOM del Modal
 const modalContent = document.getElementById('modal-content');
 const modal = document.getElementById('modal');
 const overlay = document.getElementById('overlay');
 
-const linkTypeList = document.querySelectorAll('#type-list li');
-
+// DOM del loader superior
 const loader = document.getElementById('loader');
 const loaderCount = document.getElementById('loader-count');
 const loaderImg = document.getElementById('loader-img');
 
-
-const dropdownTypeBox = document.getElementById('dropdown-type');
-
+// DOM de botones
 const allPokeBtn = document.getElementById('btn-all-pk');
 const btnTypeList = document.getElementById('btn-type-pk');
-// const normalPokeBtn = document.getElementById('btn-normal-pk');
+btnTypeList.addEventListener('click', typeListBtns);
+allPokeBtn.addEventListener('click', getAllPokemons)
 
-allPokeBtn.addEventListener('click', getAllPokemons);
-btnTypeList.addEventListener('click', dropdownList);
-// normalPokeBtn.addEventListener('click', getTypeofPokemon);
+	// Lista de Botones
+	btnMenuList = document.querySelectorAll('li');
+	for(let i = 0; i < btnMenuList.length; i++){
+		btnMenuList[i].addEventListener('click', function(e){
+			for(let i = 0; i < btnMenuList.length; i++){
+				btnMenuList[i].classList.remove('active');
+			}
+			this.classList.add('active');
+		});
+	}
 
-for(let i = 0; i < linkTypeList.length; i++){
-	linkTypeList[i].addEventListener('click', function(){
-		let typePK = this.dataset.type;
-		getTypeofPokemon(typePK);
-	});
-}
 
+// Boton para cerrar modal
 const btnClose = document.getElementById('btn-close');
 btnClose.addEventListener('click', function(e){
 	e.preventDefault();
@@ -46,10 +48,6 @@ function alerta(){
 	alert('funciona');
 }
 
-function dropdownList(){
-	dropdownTypeBox.classList.toggle('dropdown-type-down');
-}
-
 // Funcion para renderizar pokemons despues de hacer la consulta
 function renderPokemon (data){
 	let container = document.createElement("div");
@@ -65,13 +63,27 @@ function renderPokemon (data){
 	pokedex.appendChild(container);
 }
 
+// Funcion para renderizar botones
+function renderTypeButtons(data){
+	let container = document.createElement("div");
+	container.setAttribute('data-type', data.name);
+	container.classList.add("type-button");
+	let capitalName = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+	container.innerHTML = `
+			<img src="img/${data.name}-type.png" alt="" />
+			<h3>${capitalName}</h3>
+		`;
+	container.addEventListener('click', getTypeofPokemon);
+	pokedex.appendChild(container);
+}
+
 // Funcion para renderizar pokemon dentro del modal
 async function renderModal(e){
 		let pokeID = this.dataset.id;
 		overlay.classList.toggle('overlayOn');
 		modal.classList.remove('modalOut');
 		modal.classList.add('modalIn');
-		modalContent.innerHTML = `<div class="loading-modal"><img src="img/loading.gif" alt=""/></div>`;
+		randomPika(modalContent);
 		await fetch(`${BASE_API}pokemon/${pokeID}`)
 			.then(function(response){
 				return response.json();
@@ -87,7 +99,6 @@ async function renderModal(e){
 						return response.json();
 					})
 					.then(function(data2){
-						console.log(data2);
 						color = data2.color.name;
 						habitat = data2.habitat.name;
 						generacion = data2.generation.name;
@@ -162,26 +173,27 @@ async function renderModal(e){
 				`;
 			})
 			.catch(function(e){
-				console.log(e);
+				console.log('Hubo un error: -->' + e);
 			})
 
 	}
 
+
+// Funciones y variables para pedir pokemones
 let stopper = false;
 
-
-// Funcion para pedir todos los pokemones
+// Todos los pokemones
 async function getAllPokemons(){
 
 	if(!stopper){
 		loaderCount.innerHTML = "";
 		loader.classList.remove('loader-on');
 	}
-	pokedex.innerHTML = "";
+
+	randomPika(pokedex);
 	stopper = true;
 
 	console.log("pidiendo lista de pokemones");
-
 	loader.classList.add('loader-on');
 	loaderCount.innerHTML = 'Obteniendo pokemones';
 
@@ -196,10 +208,9 @@ async function getAllPokemons(){
 			let numPokes = pokemones.length;
 			console.log("renderizando pokemones");
 			loaderCount.innerHTML = 'Cargando';
+			pokedex.innerHTML = "";
 
 			for(let i = 0; i < numPokes; i++){
-
-
 				if (stopper) {return;}
 
 				await fetch(`${BASE_API}pokemon/${pokemones[i].name}`)
@@ -229,14 +240,14 @@ async function getAllPokemons(){
 		})
 }
 
-// Pedir pokemones por tipo de pokemones
-async function getTypeofPokemon(type){
-	let typePK = type;
+// Pokemones por tipo
+async function getTypeofPokemon(e){
+	let typePK = this.dataset.type;
 	if(!stopper){
 		loaderCount.innerHTML = "";
 		loader.classList.remove('loader-on');
 	}
-	pokedex.innerHTML = "";
+	randomPika(pokedex);
 	stopper = true;
 
 	loader.classList.add('loader-on');
@@ -256,6 +267,7 @@ async function getTypeofPokemon(type){
 
 			console.log("renderizando pokemones");
 			loaderCount.innerHTML = 'Cargando';
+			pokedex.innerHTML = "";
 
 			for(let i = 0; i < numPokes; i++){
 				if (stopper) {return;}
@@ -284,4 +296,54 @@ async function getTypeofPokemon(type){
 		.catch(function(e){
 			console.log('Hubo un error: -->' + e);
 		})
+}
+
+// Renderizado de botones de TIPO
+async function typeListBtns(){
+	if(!stopper){
+		loaderCount.innerHTML = "";
+		loader.classList.remove('loader-on');
+	}
+	randomPika(pokedex);
+	stopper = true;
+	console.log('Buscando lista de Tipos');
+	await fetch(`${BASE_API}type/`)
+		.then(function(response){
+			return response.json();
+		})
+		.then(function(data){
+			stopper = false;
+			pokedex.innerHTML = "";
+			console.log('Cargando lista de tipos');
+			for(let i = 0; i < data.results.length; i++){
+				if (stopper) {return;}
+				renderTypeButtons(data.results[i]);
+			}
+			console.log('Lista de tipos cargada');
+		})
+		.catch(function(e){
+			console.log('Hubo un error: -->' + e);
+		})
+}
+
+// funcion pikachu loader random
+
+function randomPika(cont){
+	displayCont = cont.dataset.loader;
+	let num = Math.random() * 10;
+	num = num.toFixed();
+	let pika;
+	if(num < 4){
+		pika = 'pika-surf';
+	} else if(num >= 4 && num < 7){
+		pika = 'pika-run';
+	} else if(num >= 7){
+		pika = 'pika-guitar';
+	}
+
+	cont.innerHTML = `
+		<div class="${displayCont}">
+			<img src="img/${pika}.gif" alt="">
+		</div>
+	`;
 }

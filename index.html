@@ -6,7 +6,8 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<link rel="stylesheet" href="style.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+
 </head>
 <body>
 	<main class="myApp">
@@ -16,30 +17,12 @@
 			</figure>
 			<nav class="menu">
 				<ul class="link-list" id="link-list">
-					<li id="btn-all-pk"><img src="img/pokeball.png" alt=""><span>Todos</span></li>
-					<li class="btn-type-list" id="btn-type-pk"><img src="img/pika.png" alt=""><span>Seleccionar por Tipo</span></li>
-					<div class="dropdown-type" id="dropdown-type">
-						<ul class="type-list" id="type-list">
-							<li data-type="normal"><img src="img/normal-type.png" alt=""><span>Normal</span></li>
-							<li data-type="fighting"><img src="img/fighting-type.png" alt=""><span>Luchador</span></li>
-							<li data-type="flying"><img src="img/flying-type.png" alt=""><span>Volador</span></li>
-							<li data-type="poison"><img src="img/poison-type.png" alt=""><span>Veneno</span></li>
-							<li data-type="ground"><img src="img/ground-type.png" alt=""><span>Tierra</span></li>
-							<li data-type="rock"><img src="img/rock-type.png" alt=""><span>Roca</span></li>
-							<li data-type="bug"><img src="img/bug-type.png" alt=""><span>Bicho</span></li>
-							<li data-type="ghost"><img src="img/ghost-type.png" alt=""><span>Fantasma</span></li>
-							<li data-type="steel"><img src="img/steel-type.png" alt=""><span>Acero</span></li>
-							<li data-type="fire"><img src="img/fire-type.png" alt=""><span>Fuego</span></li>
-							<li data-type="water"><img src="img/water-type.png" alt=""><span>Agua</span></li>
-							<li data-type="grass"><img src="img/grass-type.png" alt=""><span>Planta</span></li>
-							<li data-type="electric"><img src="img/electric-type.png" alt=""><span>Electrico</span></li>
-							<li data-type="psychic"><img src="img/psychic-type.png" alt=""><span>Psiquico</span></li>
-							<li data-type="ice"><img src="img/ice-type.png" alt=""><span>Hielo</span></li>
-							<li data-type="dragon"><img src="img/dragon-type.png" alt=""><span>Dragon</span></li>
-							<li data-type="dark"><img src="img/dark-type.png" alt=""><span>Oscuridad</span></li>
-							<li data-type="fairy"><img src="img/fairy-type.png" alt=""><span>Hada</span></li>
-						</ul>
-					</div>
+					<li id="btn-all-pk">
+						<img src="img/pokeball.png" alt=""><span>Todos</span>
+					</li>
+					<li class="btn-type-list" id="btn-type-pk">
+						<img src="img/pika.png" alt=""><span>Buscar por tipo</span>
+					</li>
 				</ul>
 			</nav>
 		</header>
@@ -57,7 +40,7 @@
 			
 		</nav>
 
-		<section id="pokedex" class="pokedex">
+		<section id="pokedex" class="pokedex" data-loader="loaderPokedex">
 			<!-- <div class="pokemon">
 				<img src="" alt="pokemon">
 				<h2>id EL poke</h2>
@@ -67,7 +50,7 @@
 		<div class="overlay overlayOff" id="overlay">
 			<div class="modal" id="modal">
 				<a href="#" class="btn-close" id="btn-close"><i class="fas fa-times"></i></a>
-				<div class="modal-content" id="modal-content">
+				<div class="modal-content" id="modal-content" data-loader="loaderModal">
 					
 				</div>
 			</div>
