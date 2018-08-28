@@ -53,11 +53,12 @@ function dropdownList(){
 // Funcion para renderizar pokemons despues de hacer la consulta
 function renderPokemon (data){
 	let container = document.createElement("div");
-	container.setAttribute('data-id', data.id)
+	container.setAttribute('data-id', data.id);
 	container.classList.add("pokemon");
+	let capitalName = data.name.charAt(0).toUpperCase() + data.name.slice(1); 
 	container.innerHTML = `
 		<img src="${data.sprites.front_default}" alt="pokemon">
-		<h3>#${data.id} ${data.name}</h3>
+		<h3>${capitalName}</h3>
 	`;
 
 	container.addEventListener('click', renderModal);
@@ -65,54 +66,80 @@ function renderPokemon (data){
 }
 
 // Funcion para renderizar pokemon dentro del modal
-function renderModal(e){
+async function renderModal(e){
 		let pokeID = this.dataset.id;
 		overlay.classList.toggle('overlayOn');
 		modal.classList.remove('modalOut');
 		modal.classList.add('modalIn');
-		fetch(`${BASE_API}pokemon/${pokeID}`)
+		modalContent.innerHTML = `<div class="loading-modal"><img src="img/loading.gif" alt=""/></div>`;
+		await fetch(`${BASE_API}pokemon/${pokeID}`)
 			.then(function(response){
 				return response.json();
 			})
-			.then(function(data){
-				console.log(data);
+			.then(async function(data){
+
+				let color;
+				let habitat;
+				let generacion;
+
+				await fetch(`${data.species.url}`)
+					.then(function(response){
+						return response.json();
+					})
+					.then(function(data2){
+						console.log(data2);
+						color = data2.color.name;
+						habitat = data2.habitat.name;
+						generacion = data2.generation.name;
+					})
+					.catch(function(e){
+						console.log('Hubo un error : -->' + e);
+					})
+
+				let capitalName = data.name.charAt(0).toUpperCase() + data.name.slice(1);
 				let weight = data.weight / 10;
 				let height = data.height / 10;
 				let types = data.types;
 				let typesPK = [];
 				let typesSTR = "";
 				let typesSTRname = "";
-				console.log('types', types);
 				types.forEach(function(el){
 					typesPK.unshift(el.type.name);
 				});
 				typesPK.forEach(function(el){
-					typesSTR += `<img width="20px" src="img/${el}-type.png" alt="" /><p>${el}</p>`;
+					typesSTR += `<div class="oneType">
+									<img width="20px" src="img/${el}-type.png" alt="" />
+									<p>${el}</p>
+								</div>`;
 					typesSTRname += `<img width="60px" src="img/${el}-type.png" alt="" />`
 				});
-
-				console.log(typesSTR);
 
 				modalContent.innerHTML = `
 					<div class="modal-img">
 						<img src="${data.sprites.front_default}" alt="pokemon"">
 					</div>
 					<div class="modal-name">
-						<h4>#${data.id}</h4>
-						<h2>${data.name}</h3>
-						${typesSTRname}
+						<div class="name">
+							<span>#${data.id}</span>
+							<h2>${capitalName}</h3>
+						</div>
+						<div class="type-img">
+							${typesSTRname}
+						</div>
 					</div>
 					<div class="modal-data">
 						<table>
 							<tr>
-								<th>Tipos</th>
+								<th>Tipo</th>
 								<td>
-								${typesSTR}
+									<div class="typesText">
+										${typesSTR}
+									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>Color</th>
-								<td></td>
+								<td>${color}</td>
 							</tr>
 							<tr>
 								<th>Altura</th>
@@ -124,7 +151,11 @@ function renderModal(e){
 							</tr>
 							<tr>
 								<th>Habitat</th>
-								<td></td>
+								<td>${habitat}</td>
+							</tr>
+							<tr>
+								<th>Generacion</th>
+								<td>${generacion}</td>
 							</tr>
 						</table>
 					</div>
@@ -142,6 +173,10 @@ let stopper = false;
 // Funcion para pedir todos los pokemones
 async function getAllPokemons(){
 
+	if(!stopper){
+		loaderCount.innerHTML = "";
+		loader.classList.remove('loader-on');
+	}
 	pokedex.innerHTML = "";
 	stopper = true;
 
@@ -197,6 +232,10 @@ async function getAllPokemons(){
 // Pedir pokemones por tipo de pokemones
 async function getTypeofPokemon(type){
 	let typePK = type;
+	if(!stopper){
+		loaderCount.innerHTML = "";
+		loader.classList.remove('loader-on');
+	}
 	pokedex.innerHTML = "";
 	stopper = true;
 
