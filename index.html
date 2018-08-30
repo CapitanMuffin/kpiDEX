@@ -11,6 +11,7 @@
 </head>
 <body>
 	<main class="myApp">
+
 		<header class="header">
 			<figure id="logo" class="logo">
 				<img src="logo.png" alt="kpidex">
@@ -20,15 +21,17 @@
 					<li id="btn-all-pk">
 						<img src="img/pokeball.png" alt=""><span>Todos</span>
 					</li>
-					<li class="btn-type-list" id="btn-type-pk">
-						<img src="img/pika.png" alt=""><span>Buscar por tipo</span>
+					<li id="btn-type-pk">
+						<img src="img/pika.png" alt=""><span>Buscar por Tipo</span>
+					</li>
+					<li id="btn-habitat-pk">
+						<img src="img/map.png" alt=""><span>Buscar por Habitat</span>
 					</li>
 				</ul>
 			</nav>
 		</header>
 
 		<nav class="search">
-			
 			<div class="form">
 				<a href="#" class="btn-search"><i class="fas fa-search"></i></a>
 				<input type="text" placeholder="Buscar por nombre" class="input-nombre">
@@ -36,8 +39,7 @@
 			<div class="loader" id="loader">
 				<img src="img/pika01.gif" id="loader-img" alt="">
 				<p class="loader-count" id="loader-count"></p>
-			</div>
-			
+			</div>	
 		</nav>
 
 		<section id="pokedex" class="pokedex" data-loader="loaderPokedex">
@@ -55,8 +57,8 @@
 				</div>
 			</div>
 		</div>
-	</main>
 
+	</main>
 
 	<script src="main.js"></script>
 </body>

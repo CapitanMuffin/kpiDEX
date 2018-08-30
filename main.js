@@ -15,8 +15,10 @@ const loaderImg = document.getElementById('loader-img');
 // DOM de botones
 const allPokeBtn = document.getElementById('btn-all-pk');
 const btnTypeList = document.getElementById('btn-type-pk');
+const btnHabitatList = document.getElementById('btn-habitat-pk');
 btnTypeList.addEventListener('click', typeListBtns);
-allPokeBtn.addEventListener('click', getAllPokemons)
+allPokeBtn.addEventListener('click', getAllPokemons);
+btnHabitatList.addEventListener('click', habitatListBtns);
 
 	// Lista de Botones
 	btnMenuList = document.querySelectorAll('li');
@@ -74,6 +76,20 @@ function renderTypeButtons(data){
 			<h3>${capitalName}</h3>
 		`;
 	container.addEventListener('click', getTypeofPokemon);
+	pokedex.appendChild(container);
+}
+
+// Funcion botones habitat
+function renderHabitatButtons(data){
+	let container = document.createElement("div");
+	container.setAttribute('data-type', data.name);
+	container.classList.add("type-button");
+	let capitalName = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+	container.innerHTML = `
+			<img src="img/${data.name}-type.png" alt="" />
+			<h3>${capitalName}</h3>
+		`;
+	container.addEventListener('click', getHabitatofPokemon);
 	pokedex.appendChild(container);
 }
 
@@ -298,6 +314,40 @@ async function getTypeofPokemon(e){
 		})
 }
 
+// Pokemones por habitat
+
+async function getHabitatofPokemon(){
+
+}
+
+// Renderizado de botones de HABITAT
+async function habitatListBtns(){
+	if(!stopper){
+		loaderCount.innerHTML = "";
+		loader.classList.remove('loader-on');
+	}
+	randomPika(pokedex);
+	stopper = true;
+	console.log('Buscando lista de Habitats');
+	await fetch(`${BASE_API}pokemon-habitat/`)
+		.then(function(response){
+			return response.json()
+		})
+		.then(function(data){
+			stopper = false;
+			pokedex.innerHTML = "";
+			console.log('Cargando lista de Habitats');
+			for(let i = 0; i < data.results.length; i++){
+				if (stopper) {return;}
+				renderTypeButtons(data.results[i]);
+			}
+			console.log('Lista de Habitats cargada');
+		})
+		.catch(function(e){
+			console.log('Hubo un error: -->' + e);
+		})
+}
+
 // Renderizado de botones de TIPO
 async function typeListBtns(){
 	if(!stopper){
@@ -314,7 +364,7 @@ async function typeListBtns(){
 		.then(function(data){
 			stopper = false;
 			pokedex.innerHTML = "";
-			console.log('Cargando lista de tipos');
+			console.log('Cargando lista de Tipos');
 			for(let i = 0; i < data.results.length; i++){
 				if (stopper) {return;}
 				renderTypeButtons(data.results[i]);
