@@ -198,7 +198,7 @@ body{
 		transform: scale(1);
 	}
 }
-	.type-button{
+	.filter-button{
 		border-radius: 10px;
 		height: 160px;
 		background: var(--silver);
@@ -214,13 +214,13 @@ body{
 		align-items: center;
 		flex-direction: column;
 	}
-	.type-button img{
-		width: 60px;
+	.filter-button img{
+		width: 100px;
 	}
-	.type-button:hover{
+	.filter-button:hover{
 		transform: scale(1.05);
 	}
-	.type-button:active{
+	.filter-button:active{
 		transform: scale(.85);
 	}
 
@@ -250,15 +250,12 @@ body{
 			transform: translateY(3000px);
 			background: #fff;
 			border-radius: 30px;
-			padding: 80px;
+			padding: 40px;
 		}
 			.modal-content{
-				height: 100%;
-				width: 100%;
 				display: grid;
 				grid-template-columns: 1fr 1fr;
 				grid-template-rows: 1fr 1fr;
-				grid-gap: 50px;
 			}
 			.modal-img{
 				grid-column: 1 / 2;
