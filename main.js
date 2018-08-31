@@ -14,31 +14,12 @@ const loaderCount = document.getElementById('loader-count');
 const loaderImg = document.getElementById('loader-img');
 
 // DOM de botones
-const allPokeBtn = document.getElementById('btn-all-pk');
 const btnFilterList = document.querySelectorAll('.btn-filter');
 
 	// Escucha de eventos en botones
-	allPokeBtn.addEventListener('click', getAllPokemons);
-	
-	// Botones de Filtrado
 	for(let i = 0; i < btnFilterList.length; i++){
 		btnFilterList[i].addEventListener('click', filterListBtns);
 	}
-
-	// Ciclo para colorear boton activo
-
-	// Lista de Botones
-	btnMenuList = document.querySelectorAll('li');
-	// Evento
-	for(let i = 0; i < btnMenuList.length; i++){
-		btnMenuList[i].addEventListener('click', function(){
-			for(let i = 0; i < btnMenuList.length; i++){
-				btnMenuList[i].classList.remove('active');
-			}
-			this.classList.add('active');
-		});
-	}
-
 
 // Boton para cerrar modal
 const btnClose = document.getElementById('btn-close');
@@ -67,57 +48,74 @@ function openModal(){
 
 // Funcion para renderizar pokemons despues de hacer la consulta
 function renderPokemon (data){
-	let container = document.createElement("div");
+	let container = document.createElement('div');
 	container.setAttribute('data-id', data.id);
-	container.classList.add("pokemon");
+	container.classList.add('pokemon');
 	let sprite = data.sprites.front_default;
-	let name = capitalize(data.name); 
+	let name = capitalize(data.name);
 	container.innerHTML = `
 		<img src="${sprite}" alt="pokemon">
 		<h3>${name}</h3>
 	`;
 
+	if (stopper) {return;}
 	container.addEventListener('click', renderModal);
 	pokedex.appendChild(container);
 }
 
 // Funcion para renderizar botones
 
+function activeButton(element){
+	for(let i = 0; i < btnFilterList.length; i++){
+		btnFilterList[i].classList.remove('active');
+		btnFilterList[i].addEventListener('click', filterListBtns);
+	}
+	element.classList.add('active');
+	element.removeEventListener('click', filterListBtns);
+}
+
 async function filterListBtns(){
 	// Obtiene lista de botones de filtrado y los manda a renderizar
+
+	activeButton(this);
+
 	category = this.dataset.category;
 	if(!stopper){
-		loaderCount.innerHTML = "";
+		loaderCount.innerHTML = '';
 		loader.classList.remove('loader-on');
 	}
 	randomPika(pokedex);
 	stopper = true;
-	console.log(`Searching ${category} list`);
-	await fetch(`${BASE_API}${category}/`)
-		.then(function(response){
-			return response.json();
-		})
-		.then(function(data){
-			stopper = false;
-			pokedex.innerHTML = "";
-			console.log(`Loading ${category} list`);
-			for(let i = 0; i < data.results.length; i++){
-				if (stopper) {return;}
-				renderFilterButtons(data.results[i], category);
-			}
-			console.log('Done');
-		})
-		.catch(function(e){
-			console.log('error: -->' + e);
-		})
+	if(category == 'all'){
+		getAllPokemons();
+	} else {
+		console.log(`Searching ${category} list`);
+		await fetch(`${BASE_API}${category}/`)
+			.then(function(response){
+				return response.json();
+			})
+			.then(function(data){
+				stopper = false;
+				pokedex.innerHTML = "";
+				console.log(`Loading ${category} list`);
+				for(let i = 0; i < data.results.length; i++){
+					if (stopper) {return;}
+					renderFilterButtons(data.results[i], category);
+				}
+				console.log('Done');
+			})
+			.catch(function(e){
+				console.log('error: -->' + e);
+			})
+	}
 }
 
 function renderFilterButtons(data, category){
 	// Muestra en pantalla los botones de filtrado
-	let container = document.createElement("div");
+	let container = document.createElement('div');
 	container.setAttribute('data-category', `${category}`);
 	container.setAttribute('data-name', data.name);
-	container.classList.add("filter-button");
+	container.classList.add('filter-button');
 	let name = capitalize(data.name);
 	container.innerHTML = `
 			<img src="img/${data.name}-${category}.png" alt="" />
@@ -160,17 +158,24 @@ async function renderModal(){
 				let height = data.height / 10;
 				let types = data.types;
 				let typesPK = [];
-				let typesSTR = "";
-				let typesSTRname = "";
+				let typeSTRData = "";
+				let typeSTRname = "";
 				types.forEach(function(el){
 					typesPK.unshift(el.type.name);
 				});
 				typesPK.forEach(function(el){
-					typesSTR += `<div class="oneType">
+					typeSTRData += `
+						<tr>
+							<th>Tipo</th>
+							<td>
+								<div class="modal-data-type">
 									<img width="20px" src="img/${el}-type.png" alt="" />
 									<p>${el}</p>
-								</div>`;
-					typesSTRname += `<img width="60px" src="img/${el}-type.png" alt="" />`
+								</div>
+							</td>
+						</tr>
+					`;
+					typeSTRname += `<img width="60px" src="img/${el}-type.png" alt="" />`
 				});
 
 				modalContent.innerHTML = `
@@ -182,20 +187,13 @@ async function renderModal(){
 							<span>#${data.id}</span>
 							<h2>${name}</h3>
 						</div>
-						<div class="type-img">
-							${typesSTRname}
+						<div class="modal-name-img">
+							${typeSTRname}
 						</div>
 					</div>
 					<div class="modal-data">
 						<table>
-							<tr>
-								<th>Tipo</th>
-								<td>
-									<div class="typesText">
-										${typesSTR}
-									</div>
-								</td>
-							</tr>
+							${typeSTRData}
 							<tr>
 								<th>Color</th>
 								<td>${color}</td>
@@ -233,29 +231,28 @@ async function renderModal(){
 async function getAllPokemons(){
 
 	if(!stopper){
-		loaderCount.innerHTML = "";
+		loaderCount.innerHTML = '';
 		loader.classList.remove('loader-on');
 	}
 
 	randomPika(pokedex);
 	stopper = true;
-
-	console.log("pidiendo lista de pokemones");
+	console.log('pidiendo lista de pokemones');
 	loader.classList.add('loader-on');
 	loaderCount.innerHTML = 'Obteniendo pokemones';
 
 	await fetch(`${BASE_API}pokemon`)
 		.then(function(response){
-			console.log("lista obtenida");
+			console.log('lista obtenida');
 			return response.json();
 		})
 		.then(async function(data){
 			stopper = false;
 			let pokemones = data.results;
 			let numPokes = pokemones.length;
-			console.log("renderizando pokemones");
+			console.log('renderizando pokemones');
 			loaderCount.innerHTML = 'Cargando';
-			pokedex.innerHTML = "";
+			pokedex.innerHTML = '';
 
 			for(let i = 0; i < numPokes; i++){
 				if (stopper) {return;}
@@ -275,7 +272,7 @@ async function getAllPokemons(){
 				loaderCount.innerHTML = `${i +1} / ${numPokes}`;
 			}
 
-			loaderCount.innerHTML = "Finalizado";
+			loaderCount.innerHTML = 'Finalizado';
 			loaderImg.setAttribute('src', 'img/pika02.gif');
 			setTimeout(function(){
 				loaderImg.setAttribute('src', 'img/pika01.gif');
@@ -293,7 +290,7 @@ async function getFilteredPokemons(){
 	let type = this.dataset.name;
 	
 	if(!stopper){
-		loaderCount.innerHTML = "";
+		loaderCount.innerHTML = '';
 		loader.classList.remove('loader-on');
 	}
 	randomPika(pokedex);
@@ -323,9 +320,9 @@ async function getFilteredPokemons(){
 			}
 			let numPokes = pokemonList.length;
 
-			console.log("rendering pokemons");
+			console.log('rendering pokemons');
 			loaderCount.innerHTML = 'Cargando';
-			pokedex.innerHTML = "";
+			pokedex.innerHTML = '';
 			for(let i = 0; i < numPokes; i++){
 				if (stopper) {return;}
 				if(category == 'type'){
@@ -361,7 +358,7 @@ async function getFilteredPokemons(){
 				loaderCount.innerHTML = `${i +1} / ${numPokes}`;
 			}
 
-			loaderCount.innerHTML = "Finalizado";
+			loaderCount.innerHTML = 'Finalizado';
 			loaderImg.setAttribute('src', 'img/pika02.gif');
 			setTimeout(function(){
 				loaderImg.setAttribute('src', 'img/pika01.gif');
