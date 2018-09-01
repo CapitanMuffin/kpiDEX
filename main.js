@@ -44,10 +44,33 @@ function openModal(){
 	modal.classList.add('modalIn');
 }
 
+// funcion boton menu desplegable
+const menu = document.getElementById('menu');
+const logo = document.getElementById('logo');
+const slideBtn = document.getElementById('slideButton');
+
+slideBtn.addEventListener('click', showMenu);
+
+function showMenu(){
+	logo.classList.toggle('showMenu');
+	menu.classList.toggle('showMenu');
+	slideBtn.classList.toggle('spin');
+}
+
+// window.addEventListener('resize', turnOffMenu);
+
+function turnOffMenu(){
+	if(window.innerWidth <= 480){
+		showMenu();
+	}
+}
+
 // ====== FUNCIONES RENDERIZADO ======
 
 // Funcion para renderizar pokemons despues de hacer la consulta
 function renderPokemon (data){
+	activeButton('reset');
+	if (stopper) {return;}
 	let container = document.createElement('div');
 	container.setAttribute('data-id', data.id);
 	container.classList.add('pokemon');
@@ -63,21 +86,28 @@ function renderPokemon (data){
 	pokedex.appendChild(container);
 }
 
-// Funcion para renderizar botones
-
+// Funcion para boton activo
 function activeButton(element){
 	for(let i = 0; i < btnFilterList.length; i++){
 		btnFilterList[i].classList.remove('active');
 		btnFilterList[i].addEventListener('click', filterListBtns);
 	}
-	element.classList.add('active');
-	element.removeEventListener('click', filterListBtns);
+	if(element === 'reset'){
+		return;
+	} else {
+		element.classList.add('active');
+		element.removeEventListener('click', filterListBtns);
+	}
 }
+
+// Funcion para renderizar botones
 
 async function filterListBtns(){
 	// Obtiene lista de botones de filtrado y los manda a renderizar
 
 	activeButton(this);
+
+	turnOffMenu();
 
 	category = this.dataset.category;
 	if(!stopper){
@@ -183,7 +213,7 @@ async function renderModal(){
 						<img src="${data.sprites.front_default}" alt="pokemon"">
 					</div>
 					<div class="modal-name">
-						<div class="name">
+						<div class="modal-pokemon-name">
 							<span>#${data.id}</span>
 							<h2>${name}</h3>
 						</div>
@@ -229,6 +259,8 @@ async function renderModal(){
 
 // Todos los pokemones
 async function getAllPokemons(){
+
+	
 
 	if(!stopper){
 		loaderCount.innerHTML = '';
@@ -280,6 +312,9 @@ async function getAllPokemons(){
 			}, 4000);
 		})
 		.catch(function(e){
+			if (e == 'TypeError: NetworkError when attempting to fetch resource.'){
+				console.log('no conecta')
+			}
 			console.log('error: -->' + e);
 		})
 }
@@ -310,6 +345,9 @@ async function getFilteredPokemons(){
 			stopper = false;
 			let pokemonList;
 			switch(category){
+				case 'generation':
+					pokemonList = data.pokemon_species;
+					break;
 				case 'pokemon-habitat':
 					pokemonList = data.pokemon_species;
 					break;
@@ -325,7 +363,7 @@ async function getFilteredPokemons(){
 			pokedex.innerHTML = '';
 			for(let i = 0; i < numPokes; i++){
 				if (stopper) {return;}
-				if(category == 'type'){
+				if(category === 'type'){
 
 					await fetch(`${BASE_API}pokemon/${pokemonList[i].pokemon.name}`)
 					.then(function(response){
@@ -339,7 +377,7 @@ async function getFilteredPokemons(){
 						console.log(e);
 					})
 
-				} else if( category == 'pokemon-habitat'){
+				} else if( category === 'pokemon-habitat' || category === 'generation'){
 
 					await fetch(`${BASE_API}pokemon/${pokemonList[i].name}`)
 					.then(function(response){
